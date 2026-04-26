@@ -7,13 +7,13 @@ An interactive financial dashboard built with Streamlit to track and analyze a p
 ## 📷 Preview
 
 ### Dashboard Overview
-![Overview](overview.png)
+<img src="overview.png" width="800"/>
 
 ### Portfolio Insights
-![Charts](charts.png)
+<img src="charts.png" width="800"/>
 
 ### Market Signals
-![Signals](signals.png)
+<img src="signals.png" width="800"/>
 
 
 

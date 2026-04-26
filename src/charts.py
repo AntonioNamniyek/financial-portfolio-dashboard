@@ -16,9 +16,8 @@ def create_pnl_chart(df):
     df = df.copy()
 
     df["PNL_color"] = df["PNL"].apply(lambda x: "green" if x > 0 else "red")
-    df["label"] = df.apply(
-        lambda row: f"{row['ticker']}<br><span style='font-size:12px'>{'+' if row['PNL'] > 0 else ''}{row['PNL']:.0f}$</span>",
-        axis=1
+    df["label"] = df["PNL"].apply(
+        lambda x: f"{'+' if x > 0 else ''}{x:.0f}$"
     )
 
     fig = px.bar(
@@ -35,23 +34,25 @@ def create_pnl_chart(df):
     )
 
     fig.update_traces(
-        textposition="inside",
-        insidetextanchor="middle",
+        textposition="outside",
         textfont=dict(
-            size=16,
+            size=12,
             color="white"
-        )
+        ),
+        cliponaxis=False
     )
 
     fig.update_layout(
         xaxis_title=None,
         yaxis_title="PNL",
         showlegend=False,
-        xaxis=dict(showticklabels=False)
+        xaxis=dict(
+            showticklabels=True,
+            tickangle=0
+        )
     )
 
     return fig
-
 
 
 def create_moving_average_chart(signals_df):
@@ -70,6 +71,7 @@ def create_moving_average_chart(signals_df):
     )
 
     return fig
+
 
 def create_ma_diff_chart(signals_df):
     signals_df = signals_df.copy()

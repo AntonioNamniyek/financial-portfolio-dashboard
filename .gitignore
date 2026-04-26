@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+data/uploaded_portfolio.csv
+data/portfolio_source.txt

@@ -11,28 +11,19 @@ EXPECTED_COLUMNS = ["ticker", "asset_name", "quantity", "buy_price", "buy_date"]
 
 def validate_portfolio_csv(df):
     missing_columns = [col for col in EXPECTED_COLUMNS if col not in df.columns]
-
-    if missing_columns:
-        return False, missing_columns
-
-    return True, []
+    return len(missing_columns) == 0, missing_columns
 
 
 def show_invalid_csv_message(missing_columns):
-    st.error(
-        f"""
-        ❌ Invalid CSV format.
+    st.error("❌ Invalid CSV format.")
 
-        Missing columns: {", ".join(missing_columns)}
+    st.write(f"Missing columns: {', '.join(missing_columns)}")
 
-        Expected columns:
-        ticker, asset_name, quantity, buy_price, buy_date
+    st.write("Expected columns:")
+    st.code("ticker,asset_name,quantity,buy_price,buy_date")
 
-        Example:
-        ticker,asset_name,quantity,buy_price,buy_date
-        AAPL,Apple,5,180,2024-01-10
-        """
-    )
+    st.write("Example:")
+    st.code("AAPL,Apple,5,180,2024-01-10")
 
 
 def save_portfolio_source(source):
@@ -40,6 +31,13 @@ def save_portfolio_source(source):
 
     with open("data/portfolio_source.txt", "w") as f:
         f.write(source)
+
+
+def reset_portfolio_source():
+    st.session_state.portfolio_source = None
+
+    if os.path.exists("data/portfolio_source.txt"):
+        os.remove("data/portfolio_source.txt")
 
 
 def load_selected_portfolio():
@@ -75,17 +73,28 @@ def load_selected_portfolio():
         st.stop()
 
     if st.button("Change portfolio", key="change_portfolio_btn"):
-        st.session_state.portfolio_source = None
-
-        if os.path.exists("data/portfolio_source.txt"):
-            os.remove("data/portfolio_source.txt")
-
+        reset_portfolio_source()
         st.rerun()
 
     if st.session_state.portfolio_source == "example":
         return load_portfolio("data/portfolio.csv")
 
     if st.session_state.portfolio_source == "upload":
-        return load_portfolio("data/uploaded_portfolio.csv")
+        if not os.path.exists("data/uploaded_portfolio.csv"):
+            reset_portfolio_source()
+            st.warning("Uploaded portfolio not found. Please upload a CSV again or use the example portfolio.")
+            st.stop()
 
-    return None
+        df_uploaded = load_portfolio("data/uploaded_portfolio.csv")
+
+        is_valid, missing_columns = validate_portfolio_csv(df_uploaded)
+
+        if not is_valid:
+            reset_portfolio_source()
+            show_invalid_csv_message(missing_columns)
+            st.stop()
+
+        return df_uploaded
+
+    reset_portfolio_source()
+    st.stop()

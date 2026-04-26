@@ -4,6 +4,19 @@ An interactive financial dashboard built with Streamlit to track and analyze a p
 
 ---
 
+## 📷 Preview
+
+### Dashboard Overview
+![Overview](overview.png)
+
+### Portfolio Insights
+![Charts](charts.png)
+
+### Market Signals
+![Signals](signals.png)
+
+
+
 ## 🚀 Features
 
 ### 📁 Portfolio Management

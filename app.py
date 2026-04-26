@@ -37,8 +37,10 @@ render_metrics(total_invested, total_current_value, total_pnl, total_pnl_percent
 st.divider()
 
 st.subheader("Portfolio")
+
 df_display = prepare_display_table(df_filtered)
 styled_df = style_display_table(df_display)
+
 st.dataframe(styled_df, width="stretch")
 
 st.divider()
@@ -48,14 +50,14 @@ st.subheader("Portfolio Insights")
 chart_col1, chart_col2 = st.columns(2)
 
 with chart_col1:
-    fig = create_allocation_chart(df_filtered)
-    fig.update_layout(height=400)
-    st.plotly_chart(fig, use_container_width=True)
+    fig_allocation = create_allocation_chart(df_filtered)
+    fig_allocation.update_layout(height=400)
+    st.plotly_chart(fig_allocation, width="stretch")
 
 with chart_col2:
     fig_pnl = create_pnl_chart(df_filtered)
     fig_pnl.update_layout(height=400)
-    st.plotly_chart(fig_pnl, use_container_width=True)
+    st.plotly_chart(fig_pnl, width="stretch")
 
 st.divider()
 
@@ -65,7 +67,7 @@ signals_df = calculate_market_signals(df_filtered["ticker"])
 
 fig_ma = create_ma_diff_chart(signals_df)
 fig_ma.update_layout(height=400)
-st.plotly_chart(fig_ma, use_container_width=True)
+st.plotly_chart(fig_ma, width="stretch")
 
 signals_df["MA20"] = signals_df["MA20"].map(lambda x: f"${x:,.2f}")
 signals_df["MA50"] = signals_df["MA50"].map(lambda x: f"${x:,.2f}")

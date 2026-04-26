@@ -1,7 +1,7 @@
 ## 📊 Portfolio Market Dashboard
 
-🔗 Connect with me:  
-- LinkedIn: https://linkedin.com/in/antonio-namniyek
+🌐 Live Demo: https://financial-portfolio-dashboard.streamlit.app  
+🔗 LinkedIn: https://linkedin.com/in/antonio-namniyek
 
 An interactive financial dashboard built with Streamlit to track and analyze a portfolio using real-time market data.
 

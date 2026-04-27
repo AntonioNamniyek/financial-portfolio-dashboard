@@ -3,83 +3,93 @@
 🌐 Live Demo: https://financial-portfolio-dashboard.streamlit.app  
 🔗 LinkedIn: https://linkedin.com/in/antonio-namniyek
 
-An interactive financial dashboard built with Streamlit to track and analyze a portfolio using real-time market data.
+A modern financial dashboard built with Streamlit to track portfolio performance, analyze assets, and compare results against the S&P 500 using real-time market data.
 
 ---
 
 ## 📷 Preview
 
-### Dashboard Overview
-<img src="overview.png" width="800"/>
-
 ### Portfolio Insights
-<img src="charts.png" width="800"/>
+<img src="Portfolio.png" width="800"/>
 
-### Market Signals
-<img src="signals.png" width="800"/>
+### Analysis
+<img src="Analysis.png" width="800"/>
 
-
+---
 
 ## 🚀 Features
 
-### 📁 Portfolio Management
-- Load your own portfolio via CSV upload
-- Built-in example portfolio
-- Automatic persistence of selected portfolio
-- Asset filtering (multi-select)
+### 💼 Portfolio Management
+- Add assets manually
+- Automatically update existing positions using average buy price
+- Remove selected assets from the portfolio
+- Track quantity, buy price, buy date and current price
 
 ### 📈 Market Data
 - Real-time prices via yfinance
-- Cached data for performance
-- Manual refresh option
+- Cached data for better performance
+- Manual refresh support
 
 ### 💰 Performance Tracking
-- Total invested vs current value
-- Profit & Loss (PNL)
+- Total invested
+- Current portfolio value
+- Total PNL
 - PNL percentage
+- Daily PNL
+- Portfolio value over time
 
 ### 📊 Visualizations
-- Portfolio allocation (pie chart)
-- PNL by asset (bar chart)
-- Moving average comparison (MA20 vs MA50)
-- Trend strength visualization (normalized % difference)
+- Portfolio allocation donut chart
+- PNL by asset bar chart
+- Portfolio performance chart
+- Optional comparison with the S&P 500 benchmark
 
-### 📉 Market Signals
-- MA20 & MA50 indicators
-- Trend classification (Bullish / Bearish)
-- RSI (Relative Strength Index)
-- RSI signals (Overbought / Oversold / Neutral)
-- Gradient-based visualization for trend strength
+### 📉 Analysis Page
+- Search any asset ticker
+- TradingView chart integration
+- Current price
+- MA20 and MA50
+- RSI
+- MA difference percentage
+- Bullish / Bearish / Neutral signal box
+
+### 🧠 Market Signals
+- RSI-based overbought / oversold detection
+- MA20 vs MA50 trend classification
+- Momentum interpretation using MA Diff
+- Clean signal summary for faster decision-making
 
 ---
 
 ## 🧱 Project Structure
 
+```text
 src/
-│
-├── charts.py # Plotly visualizations
-├── indicators.py # RSI, MA signals
-├── portfolio.py # Portfolio calculations
-├── market_data.py # Price fetching
-├── formatting.py # Table formatting
-├── data_loader.py # Upload / persistence logic
-├── ui.py # UI layout helpers
+├── charts.py          # Plotly visualizations
+├── indicators.py      # RSI, MA20, MA50 and market signals
+├── portfolio.py       # Portfolio calculations and benchmark logic
+├── market_data.py     # Price fetching
+├── formatting.py      # Table formatting
+├── tradingview.py     # TradingView chart integration
+├── ui.py              # UI layout helpers and custom styling loader
+├── styles.css         # Custom dashboard styling
 
+pages/
+├── 📊_Portfolio.py
+├── 🔍_Analysis.py
 
----
+🏠_Home.py
+
 
 ## 🛠 Technologies
-
-- Python
-- Streamlit
-- pandas
-- yfinance
-- Plotly
-
----
+Python
+Streamlit
+pandas
+yfinance
+Plotly
+TradingView widget
+HTML / CSS
 
 ## ▶️ How to Run
-
-```bash
 pip install -r requirements.txt
-streamlit run app.py
+streamlit run "🏠_Home.py"

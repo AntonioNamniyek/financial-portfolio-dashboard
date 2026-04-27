@@ -1,0 +1,164 @@
+[data-testid="stMainBlockContainer"] {
+    max-width: 1500px;
+    padding-top: 2rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+[data-testid="stAppViewContainer"] {
+    background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 28%),
+        #080b12;
+}
+
+[data-testid="stSidebar"] {
+    background-color: #0b0f19;
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+h1, h2, h3 {
+    letter-spacing: -0.04em;
+}
+
+div[data-testid="stMetric"] {
+    background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.10);
+    padding: 1.2rem;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+}
+
+div[data-testid="stMetric"] label {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.85rem;
+}
+
+div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+div[data-testid="stMetricDelta"] {
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+    width: fit-content;
+    background: rgba(255,255,255,0.06);
+}
+
+div[data-testid="stForm"] {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 22px;
+    padding: 1.4rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.stPlotlyChart {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 22px;
+    padding: 1rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+}
+
+[data-testid="stDataFrame"] {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 22px;
+    padding: 0.5rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+    overflow: hidden;
+}
+
+[data-testid="stDataFrame"] div {
+    color: white;
+}
+
+hr {
+    border-color: rgba(255,255,255,0.08);
+}
+
+/* --- SIDEBAR --- */
+
+[data-testid="stSidebarNav"] > div:first-child {
+    display: none;
+}
+
+[data-testid="stSidebarNav"] {
+    padding-top: 1rem;
+}
+
+[data-testid="stSidebarNav"] a {
+    border-radius: 12px;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+    color: rgba(255,255,255,0.75);
+}
+
+[data-testid="stSidebarNav"] a:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+[data-testid="stSidebarNav"] a[aria-current="page"] {
+    background: linear-gradient(90deg, rgba(124,58,237,0.3), rgba(14,165,233,0.2));
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* --- SIGNAL BOX --- */
+
+.signal-box {
+    background: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025));
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 22px;
+    padding: 1.5rem;
+    margin: 1rem 0 1.5rem 0;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    transition: all 0.2s ease;
+}
+
+.signal-box:hover {
+    transform: translateY(-2px);
+}
+
+.signal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+}
+
+.signal-icon {
+    font-size: 1.3rem;
+}
+
+.signal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+}
+
+.signal-message {
+    color: rgba(255,255,255,0.76);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.signal-metrics {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 260px;
+    padding: 0.7rem 0.85rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.62);
+    font-size: 0.85rem;
+}
+
+.signal-metrics strong {
+    color: white;
+    font-size: 0.95rem;
+}

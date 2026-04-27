@@ -8,8 +8,8 @@ def calculate_rsi(close_prices, period=14):
     gain = delta.clip(lower=0)
     loss = -delta.clip(upper=0)
 
-    avg_gain = gain.rolling(period).mean()
-    avg_loss = loss.rolling(period).mean()
+    avg_gain = gain.ewm(alpha=1/period, min_periods=period).mean()
+    avg_loss = loss.ewm(alpha=1/period, min_periods=period).mean()
 
     rs = avg_gain / avg_loss
     rsi = 100 - (100 / (1 + rs))
@@ -22,9 +22,16 @@ def calculate_market_signals(tickers):
 
     for ticker in tickers:
         stock = yf.Ticker(ticker)
-        history = stock.history(period="6mo")
+        history = stock.history(period="1y")
 
-        rsi_series = calculate_rsi(history["Close"])
+        if history.empty:
+            continue
+
+        close_prices = history["Close"]
+
+        current_price = close_prices.iloc[-1]
+
+        rsi_series = calculate_rsi(close_prices)
         rsi = rsi_series.iloc[-1]
 
         if rsi > 70:
@@ -34,8 +41,8 @@ def calculate_market_signals(tickers):
         else:
             rsi_signal = "Neutral"
 
-        ma20 = history["Close"].tail(20).mean()
-        ma50 = history["Close"].tail(50).mean()
+        ma20 = close_prices.tail(20).mean()
+        ma50 = close_prices.tail(50).mean()
 
         trend = "Bullish" if ma20 > ma50 else "Bearish"
 
@@ -43,6 +50,7 @@ def calculate_market_signals(tickers):
 
         signals.append({
             "Ticker": ticker,
+            "Current Price": current_price,
             "MA20": ma20,
             "MA50": ma50,
             "Trend": trend,

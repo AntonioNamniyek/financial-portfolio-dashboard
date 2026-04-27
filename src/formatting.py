@@ -1,16 +1,37 @@
+import pandas as pd
+
+
+def format_currency(value):
+    if pd.isna(value):
+        return "N/A"
+
+    return f"${value:,.2f}"
+
+
+def format_percentage(value):
+    if pd.isna(value):
+        return "N/A"
+
+    return f"{value:.2f}%"
+
+
+def format_quantity(value):
+    if pd.isna(value):
+        return "N/A"
+
+    return f"{int(value)}" if value >= 1 else f"{value:.4f}"
+
+
 def prepare_display_table(df):
     df_display = df.copy()
 
-    df_display["quantity"] = df_display["quantity"].map(
-        lambda x: f"{int(x)}" if x >= 1 else f"{x:.4f}"
-    )
-
-    df_display["buy_price"] = df_display["buy_price"].map(lambda x: f"${x:,.2f}")
-    df_display["current_price"] = df_display["current_price"].map(lambda x: f"${x:,.2f}")
-    df_display["invested_value"] = df_display["invested_value"].map(lambda x: f"${x:,.2f}")
-    df_display["current_value"] = df_display["current_value"].map(lambda x: f"${x:,.2f}")
-    df_display["PNL"] = df_display["PNL"].map(lambda x: f"${x:,.2f}")
-    df_display["PNL_Percentage"] = df_display["PNL_Percentage"].map(lambda x: f"{x:.2f}%")
+    df_display["quantity"] = df_display["quantity"].map(format_quantity)
+    df_display["buy_price"] = df_display["buy_price"].map(format_currency)
+    df_display["current_price"] = df_display["current_price"].map(format_currency)
+    df_display["invested_value"] = df_display["invested_value"].map(format_currency)
+    df_display["current_value"] = df_display["current_value"].map(format_currency)
+    df_display["PNL"] = df_display["PNL"].map(format_currency)
+    df_display["PNL_Percentage"] = df_display["PNL_Percentage"].map(format_percentage)
 
     df_display = df_display.rename(columns={
         "ticker": "Ticker",
@@ -29,6 +50,9 @@ def prepare_display_table(df):
 
 
 def color_pnl(value):
+    if value == "N/A":
+        return "color: white"
+
     value = float(value.replace("$", "").replace(",", ""))
 
     if value > 0:
@@ -40,6 +64,9 @@ def color_pnl(value):
 
 
 def color_pnl_percentage(value):
+    if value == "N/A":
+        return "color: white"
+
     value = float(value.replace("%", ""))
 
     if value > 0:

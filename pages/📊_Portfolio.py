@@ -1,5 +1,3 @@
-import os
-
 import streamlit as st
 import pandas as pd
 
@@ -22,32 +20,17 @@ from src.charts import (
 )
 
 
-PORTFOLIO_PATH = "data/portfolio_saved.csv"
-
-
-def save_portfolio():
-    os.makedirs("data", exist_ok=True)
-    st.session_state.portfolio.to_csv(PORTFOLIO_PATH, index=False)
-
-
 apply_custom_layout()
 
 st.title("💼 Portfolio")
 
-if st.button("🔄 Refresh Prices"):
-    st.cache_data.clear()
-    st.rerun()
-
 if "portfolio" not in st.session_state:
-    if os.path.exists(PORTFOLIO_PATH):
-        st.session_state.portfolio = pd.read_csv(PORTFOLIO_PATH)
-    else:
-        st.session_state.portfolio = pd.DataFrame(columns=[
-            "ticker",
-            "quantity",
-            "buy_price",
-            "buy_date"
-        ])
+    st.session_state.portfolio = pd.DataFrame(columns=[
+        "ticker",
+        "quantity",
+        "buy_price",
+        "buy_date"
+    ])
 
 with st.form("add_asset_form"):
     col1, col2 = st.columns(2, gap="large")
@@ -100,9 +83,7 @@ with st.form("add_asset_form"):
 
                 st.success(f"{ticker} added to portfolio!")
 
-            save_portfolio()
             st.rerun()
-
 
 if not st.session_state.portfolio.empty:
     df = st.session_state.portfolio.copy()
@@ -225,8 +206,6 @@ if not st.session_state.portfolio.empty:
             st.session_state.portfolio = st.session_state.portfolio[
                 ~selected_rows.values
             ].reset_index(drop=True)
-
-            save_portfolio()
 
             st.success("Selected assets removed!")
             st.rerun()

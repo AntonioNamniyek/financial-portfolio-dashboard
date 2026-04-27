@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 import pandas as pd
 
@@ -13,7 +15,6 @@ from src.portfolio import (
 )
 from src.formatting import prepare_display_table
 from src.ui import render_metrics, apply_custom_layout
-
 from src.charts import (
     create_allocation_chart,
     create_pnl_chart,
@@ -21,17 +22,32 @@ from src.charts import (
 )
 
 
+PORTFOLIO_PATH = "data/portfolio_saved.csv"
+
+
+def save_portfolio():
+    os.makedirs("data", exist_ok=True)
+    st.session_state.portfolio.to_csv(PORTFOLIO_PATH, index=False)
+
+
 apply_custom_layout()
 
 st.title("💼 Portfolio")
 
+if st.button("🔄 Refresh Prices"):
+    st.cache_data.clear()
+    st.rerun()
+
 if "portfolio" not in st.session_state:
-    st.session_state.portfolio = pd.DataFrame(columns=[
-        "ticker",
-        "quantity",
-        "buy_price",
-        "buy_date"
-    ])
+    if os.path.exists(PORTFOLIO_PATH):
+        st.session_state.portfolio = pd.read_csv(PORTFOLIO_PATH)
+    else:
+        st.session_state.portfolio = pd.DataFrame(columns=[
+            "ticker",
+            "quantity",
+            "buy_price",
+            "buy_date"
+        ])
 
 with st.form("add_asset_form"):
     col1, col2 = st.columns(2, gap="large")
@@ -84,6 +100,7 @@ with st.form("add_asset_form"):
 
                 st.success(f"{ticker} added to portfolio!")
 
+            save_portfolio()
             st.rerun()
 
 
@@ -116,7 +133,6 @@ if not st.session_state.portfolio.empty:
 
     st.divider()
 
-    # PORTFOLIO PERFORMANCE
     st.markdown("### 📈 Portfolio Performance")
 
     price_history = get_portfolio_history(df)
@@ -128,7 +144,7 @@ if not st.session_state.portfolio.empty:
     benchmark_history = get_benchmark_history(start_date)
     comparison_df = compare_with_benchmark(portfolio_history, benchmark_history)
 
-    portfolio_return = comparison_df["Portfolio Indexed"].iloc[-1] - 100
+    portfolio_return = total_pnl_percentage
     sp500_return = comparison_df["S&P 500 Indexed"].iloc[-1] - 100
     performance_vs_sp500 = portfolio_return - sp500_return
 
@@ -159,7 +175,6 @@ if not st.session_state.portfolio.empty:
 
     st.divider()
 
-    # HOLDINGS
     st.markdown("### 📋 Holdings")
     st.caption("Detailed view of your current positions, prices and performance.")
 
@@ -210,6 +225,8 @@ if not st.session_state.portfolio.empty:
             st.session_state.portfolio = st.session_state.portfolio[
                 ~selected_rows.values
             ].reset_index(drop=True)
+
+            save_portfolio()
 
             st.success("Selected assets removed!")
             st.rerun()

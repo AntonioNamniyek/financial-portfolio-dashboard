@@ -80,16 +80,21 @@ pages/
 
 🏠_Home.py
 
-
+```
 ## 🛠 Technologies
-Python
-Streamlit
-pandas
-yfinance
-Plotly
-TradingView widget
-HTML / CSS
+
+- Python  
+- Streamlit  
+- pandas  
+- yfinance  
+- Plotly  
+- TradingView widget  
+- HTML / CSS  
+
+---
 
 ## ▶️ How to Run
+
+```bash
 pip install -r requirements.txt
 streamlit run "🏠_Home.py"

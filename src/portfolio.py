@@ -50,16 +50,31 @@ def get_portfolio_history(df):
     for ticker in df["ticker"].unique():
         yf_ticker = normalize_ticker(ticker)
 
-        stock = yf.Ticker(yf_ticker)
-        history = stock.history(start=start_date)["Close"]
+        try:
+            stock = yf.Ticker(yf_ticker)
+            history = stock.history(start=start_date)
 
-        if not history.empty:
-            history.index = pd.to_datetime(history.index).tz_localize(None).date
-            history = history.groupby(history.index).last()
+            if history.empty or "Close" not in history.columns:
+                continue
 
-            all_data[ticker] = history
+            close_prices = history["Close"].dropna()
+
+            if close_prices.empty:
+                continue
+
+            close_prices.index = pd.to_datetime(close_prices.index).tz_localize(None).date
+            close_prices = close_prices.groupby(close_prices.index).last()
+
+            all_data[ticker] = close_prices
+
+        except Exception:
+            continue
 
     price_history = pd.DataFrame(all_data)
+
+    if price_history.empty:
+        return price_history
+
     price_history.index = pd.to_datetime(price_history.index)
 
     return price_history.sort_index()
@@ -108,10 +123,17 @@ def calculate_daily_pnl(portfolio_history):
 
 
 def get_benchmark_history(start_date, benchmark="^GSPC"):
-    stock = yf.Ticker(benchmark)
-    history = stock.history(start=start_date)["Close"]
+    try:
+        stock = yf.Ticker(benchmark)
+        history = stock.history(start=start_date)
 
-    return history
+        if history.empty or "Close" not in history.columns:
+            return pd.Series(dtype="float64")
+
+        return history["Close"].dropna()
+
+    except Exception:
+        return pd.Series(dtype="float64")
 
 
 def compare_with_benchmark(portfolio_history, benchmark_history):

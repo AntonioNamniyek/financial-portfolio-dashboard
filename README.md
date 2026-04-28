@@ -1,6 +1,6 @@
 ## 📊 Portfolio Market Dashboard
 
-🌐 Live Demo: https://financial-portfolio-dashboard-v2.streamlit.app  
+🌐 Live Demo: https://financial-portfolio-dashboard.streamlit.app  
 🔗 LinkedIn: https://linkedin.com/in/antonio-namniyek
 
 A modern financial dashboard built with Streamlit to track portfolio performance, analyze assets, and compare results against the S&P 500 using real-time market data.

@@ -126,14 +126,14 @@ if not st.session_state.portfolio.empty:
 
         start_date = portfolio_history.index.min()
         benchmark_history = get_benchmark_history(start_date)
-        comparison_df = compare_with_benchmark(portfolio_history, benchmark_history)
+        comparison_df = compare_with_benchmark(portfolio_history, benchmark_history, df)
 
         if comparison_df.empty:
             st.info("Benchmark comparison is not available for this asset/time period.")
             fig_performance = create_portfolio_performance_chart(portfolio_history)
             st.plotly_chart(fig_performance, use_container_width=True)
         else:
-            portfolio_return = total_pnl_percentage
+            portfolio_return = comparison_df["Portfolio Indexed"].iloc[-1] - 100
             sp500_return = comparison_df["S&P 500 Indexed"].iloc[-1] - 100
             performance_vs_sp500 = portfolio_return - sp500_return
 

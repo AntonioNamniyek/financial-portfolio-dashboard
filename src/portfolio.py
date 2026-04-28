@@ -82,6 +82,7 @@ def get_portfolio_history(df):
 
 def calculate_portfolio_history(df, price_history):
     portfolio_history = pd.DataFrame(index=price_history.index)
+    portfolio_history["Invested"] = 0.0
 
     for _, row in df.iterrows():
         ticker = row["ticker"]
@@ -96,11 +97,22 @@ def calculate_portfolio_history(df, price_history):
 
         portfolio_history[ticker] = asset_value
 
+        invested_value = quantity * row["buy_price"]
+        active_mask = price_history.index >= buy_date
+
+        portfolio_history["Invested"] += active_mask.astype(float) * invested_value
+
     if portfolio_history.empty:
         return portfolio_history
 
     portfolio_history = portfolio_history.ffill().fillna(0)
-    portfolio_history["Total"] = portfolio_history.sum(axis=1)
+
+    asset_columns = [
+        col for col in portfolio_history.columns
+        if col != "Invested"
+    ]
+
+    portfolio_history["Total"] = portfolio_history[asset_columns].sum(axis=1)
 
     return portfolio_history
 
@@ -136,40 +148,64 @@ def get_benchmark_history(start_date, benchmark="^GSPC"):
         return pd.Series(dtype="float64")
 
 
-def compare_with_benchmark(portfolio_history, benchmark_history):
+def compare_with_benchmark(portfolio_history, benchmark_history, df):
     if portfolio_history.empty or "Total" not in portfolio_history.columns:
         return pd.DataFrame()
 
-    benchmark_history = benchmark_history.copy()
-    benchmark_history.index = pd.to_datetime(benchmark_history.index).tz_localize(None)
-
-    portfolio = portfolio_history["Total"].copy()
-    portfolio.index = pd.to_datetime(portfolio.index)
-
-    # 🔥 INTERSEÇÃO REAL DE DATAS
-    common_index = portfolio.index.intersection(benchmark_history.index)
-
-    if len(common_index) < 2:
+    if benchmark_history.empty:
         return pd.DataFrame()
 
-    portfolio = portfolio.loc[common_index]
-    benchmark = benchmark_history.loc[common_index]
+    comparison = pd.DataFrame(index=portfolio_history.index)
 
-    comparison = pd.DataFrame({
-        "Portfolio": portfolio,
-        "Benchmark": benchmark
-    })
+    benchmark_history = benchmark_history.copy()
+    benchmark_history.index = pd.to_datetime(benchmark_history.index).tz_localize(None)
+    benchmark_history = benchmark_history.groupby(benchmark_history.index).last()
 
-    # 🔥 NORMALIZAÇÃO CORRETA
+    benchmark_series = benchmark_history.reindex(comparison.index).ffill().bfill()
+
+    comparison["Portfolio"] = portfolio_history["Total"]
+    comparison["Invested"] = portfolio_history["Invested"]
+
     comparison["Portfolio Indexed"] = (
-        comparison["Portfolio"] / comparison["Portfolio"].iloc[0] * 100
+        comparison["Portfolio"] / comparison["Invested"] * 100
     )
+
+    benchmark_value = pd.Series(0.0, index=comparison.index)
+    benchmark_invested = pd.Series(0.0, index=comparison.index)
+
+    for _, row in df.iterrows():
+        buy_date = pd.to_datetime(row["buy_date"])
+        invested_amount = row["quantity"] * row["buy_price"]
+
+        valid_dates = benchmark_series[benchmark_series.index >= buy_date]
+
+        if valid_dates.empty:
+            continue
+
+        benchmark_buy_price = valid_dates.iloc[0]
+        benchmark_units = invested_amount / benchmark_buy_price
+
+        active_mask = benchmark_series.index >= valid_dates.index[0]
+
+        benchmark_value.loc[active_mask] += benchmark_units * benchmark_series.loc[active_mask]
+        benchmark_invested.loc[active_mask] += invested_amount
+
+    comparison["Benchmark Value"] = benchmark_value
+    comparison["Benchmark Invested"] = benchmark_invested
+
+    comparison = comparison[
+        (comparison["Invested"] > 0) &
+        (comparison["Benchmark Invested"] > 0)
+    ]
+
+    if comparison.empty:
+        return pd.DataFrame()
 
     comparison["S&P 500 Indexed"] = (
-        comparison["Benchmark"] / comparison["Benchmark"].iloc[0] * 100
+        comparison["Benchmark Value"] / comparison["Benchmark Invested"] * 100
     )
 
-    return comparison
+    return comparison.dropna()
 
 
 def calculate_vs_benchmark(comparison_df):

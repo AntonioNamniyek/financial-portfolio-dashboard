@@ -6,6 +6,20 @@ def load_portfolio(path):
     return pd.read_csv(path)
 
 
+def normalize_ticker(ticker):
+    ticker = str(ticker).upper().strip()
+
+    if ticker.startswith("^"):
+        return ticker
+
+    if "-" in ticker:
+        return ticker
+
+    if ticker.endswith("USD") and len(ticker) > 3:
+        return ticker[:-3] + "-USD"
+
+    return ticker
+
 def calculate_portfolio_values(df):
     df["invested_value"] = df["quantity"] * df["buy_price"]
     df["current_value"] = df["quantity"] * df["current_price"]
@@ -34,11 +48,21 @@ def get_portfolio_history(df):
     start_date = pd.to_datetime(df["buy_date"]).min()
 
     for ticker in df["ticker"].unique():
-        stock = yf.Ticker(ticker)
-        history = stock.history(start=start_date)["Close"]
-        all_data[ticker] = history
+        yf_ticker = normalize_ticker(ticker)
 
-    return pd.DataFrame(all_data)
+        stock = yf.Ticker(yf_ticker)
+        history = stock.history(start=start_date)["Close"]
+
+        if not history.empty:
+            history.index = pd.to_datetime(history.index).tz_localize(None).date
+            history = history.groupby(history.index).last()
+
+            all_data[ticker] = history
+
+    price_history = pd.DataFrame(all_data)
+    price_history.index = pd.to_datetime(price_history.index)
+
+    return price_history.sort_index()
 
 
 def calculate_portfolio_history(df, price_history):
@@ -47,22 +71,27 @@ def calculate_portfolio_history(df, price_history):
     for _, row in df.iterrows():
         ticker = row["ticker"]
         quantity = row["quantity"]
-        buy_date = pd.to_datetime(row["buy_date"]).date()
+        buy_date = pd.to_datetime(row["buy_date"])
+
+        if ticker not in price_history.columns:
+            continue
 
         asset_value = price_history[ticker] * quantity
+        asset_value = asset_value.where(price_history.index >= buy_date, 0)
 
-        asset_value.index = asset_value.index.date
-        asset_value = asset_value.where(asset_value.index >= buy_date, 0)
+        portfolio_history[ticker] = asset_value
 
-        portfolio_history[ticker] = asset_value.values
+    if portfolio_history.empty:
+        return portfolio_history
 
+    portfolio_history = portfolio_history.ffill().fillna(0)
     portfolio_history["Total"] = portfolio_history.sum(axis=1)
 
     return portfolio_history
 
 
 def calculate_daily_pnl(portfolio_history):
-    if portfolio_history.empty or len(portfolio_history) < 2:
+    if portfolio_history.empty or "Total" not in portfolio_history.columns or len(portfolio_history) < 2:
         return 0, 0
 
     current_value = portfolio_history["Total"].iloc[-1]
@@ -86,13 +115,30 @@ def get_benchmark_history(start_date, benchmark="^GSPC"):
 
 
 def compare_with_benchmark(portfolio_history, benchmark_history):
-    comparison = pd.DataFrame(index=portfolio_history.index)
+    if portfolio_history.empty or "Total" not in portfolio_history.columns:
+        return pd.DataFrame()
 
-    comparison["Portfolio"] = portfolio_history["Total"]
-    comparison["Benchmark"] = benchmark_history.reindex(portfolio_history.index).ffill()
+    benchmark_history = benchmark_history.copy()
+    benchmark_history.index = pd.to_datetime(benchmark_history.index).tz_localize(None)
 
-    comparison = comparison.dropna()
+    portfolio = portfolio_history["Total"].copy()
+    portfolio.index = pd.to_datetime(portfolio.index)
 
+    # 🔥 INTERSEÇÃO REAL DE DATAS
+    common_index = portfolio.index.intersection(benchmark_history.index)
+
+    if len(common_index) < 2:
+        return pd.DataFrame()
+
+    portfolio = portfolio.loc[common_index]
+    benchmark = benchmark_history.loc[common_index]
+
+    comparison = pd.DataFrame({
+        "Portfolio": portfolio,
+        "Benchmark": benchmark
+    })
+
+    # 🔥 NORMALIZAÇÃO CORRETA
     comparison["Portfolio Indexed"] = (
         comparison["Portfolio"] / comparison["Portfolio"].iloc[0] * 100
     )

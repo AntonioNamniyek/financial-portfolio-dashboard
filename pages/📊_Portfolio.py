@@ -119,40 +119,48 @@ if not st.session_state.portfolio.empty:
     price_history = get_portfolio_history(df)
     portfolio_history = calculate_portfolio_history(df, price_history)
 
-    daily_pnl, daily_pnl_percentage = calculate_daily_pnl(portfolio_history)
+    if portfolio_history.empty or "Total" not in portfolio_history.columns or len(portfolio_history) < 2:
+        st.info("Portfolio performance needs at least 2 valid market data points.")
+    else:
+        daily_pnl, daily_pnl_percentage = calculate_daily_pnl(portfolio_history)
 
-    start_date = portfolio_history.index.min()
-    benchmark_history = get_benchmark_history(start_date)
-    comparison_df = compare_with_benchmark(portfolio_history, benchmark_history)
+        start_date = portfolio_history.index.min()
+        benchmark_history = get_benchmark_history(start_date)
+        comparison_df = compare_with_benchmark(portfolio_history, benchmark_history)
 
-    portfolio_return = total_pnl_percentage
-    sp500_return = comparison_df["S&P 500 Indexed"].iloc[-1] - 100
-    performance_vs_sp500 = portfolio_return - sp500_return
+        if comparison_df.empty:
+            st.info("Benchmark comparison is not available for this asset/time period.")
+            fig_performance = create_portfolio_performance_chart(portfolio_history)
+            st.plotly_chart(fig_performance, use_container_width=True)
+        else:
+            portfolio_return = total_pnl_percentage
+            sp500_return = comparison_df["S&P 500 Indexed"].iloc[-1] - 100
+            performance_vs_sp500 = portfolio_return - sp500_return
 
-    metric_col1, metric_col2 = st.columns([1, 1], gap="large")
+            metric_col1, metric_col2 = st.columns([1, 1], gap="large")
 
-    with metric_col1:
-        st.metric(
-            "Daily PNL",
-            f"${daily_pnl:,.2f}",
-            f"{daily_pnl_percentage:.2f}%"
-        )
+            with metric_col1:
+                st.metric(
+                    "Daily PNL",
+                    f"${daily_pnl:,.2f}",
+                    f"{daily_pnl_percentage:.2f}%"
+                )
 
-    with metric_col2:
-        st.metric(
-            "Performance vs S&P 500",
-            f"{performance_vs_sp500:.2f}%",
-            f"Portfolio {portfolio_return:.2f}% vs S&P 500 {sp500_return:.2f}%"
-        )
+            with metric_col2:
+                st.metric(
+                    "Outperformance vs S&P 500",
+                    f"{performance_vs_sp500:.2f}%",
+                    f"Portfolio {portfolio_return:.2f}% vs S&P 500 {sp500_return:.2f}%"
+                )
 
-    compare_sp500 = st.toggle("Compare with S&P 500")
+            compare_sp500 = st.toggle("Compare with S&P 500")
 
-    fig_performance = create_portfolio_performance_chart(
-        portfolio_history,
-        comparison_df if compare_sp500 else None
-    )
+            fig_performance = create_portfolio_performance_chart(
+                portfolio_history,
+                comparison_df if compare_sp500 else None
+            )
 
-    st.plotly_chart(fig_performance, use_container_width=True)
+            st.plotly_chart(fig_performance, use_container_width=True)
 
     st.divider()
 

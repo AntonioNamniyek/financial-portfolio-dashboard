@@ -1,4 +1,4 @@
-## 📊 Portfolio Market Dashboard
+## Portfolio Market Dashboard
 
 🌐 Live Demo: https://financial-portfolio-dashboard.streamlit.app  
 🔗 LinkedIn: https://linkedin.com/in/antonio-namniyek
@@ -7,7 +7,7 @@ A modern financial dashboard built with Streamlit to track portfolio performance
 
 ---
 
-## 📷 Preview
+##Preview
 
 ### Portfolio Insights
 <img src="Portfolio.png" width="800"/>
@@ -17,20 +17,20 @@ A modern financial dashboard built with Streamlit to track portfolio performance
 
 ---
 
-## 🚀 Features
+## Features
 
-### 💼 Portfolio Management
+### Portfolio Management
 - Add assets manually
 - Automatically update existing positions using average buy price
 - Remove selected assets from the portfolio
 - Track quantity, buy price, buy date and current price
 
-### 📈 Market Data
+### Market Data
 - Real-time prices via yfinance
 - Cached data for better performance
 - Manual refresh support
 
-### 💰 Performance Tracking
+### Performance Tracking
 - Total invested
 - Current portfolio value
 - Total PNL
@@ -38,13 +38,13 @@ A modern financial dashboard built with Streamlit to track portfolio performance
 - Daily PNL
 - Portfolio value over time
 
-### 📊 Visualizations
+### Visualizations
 - Portfolio allocation donut chart
 - PNL by asset bar chart
 - Portfolio performance chart
 - Optional comparison with the S&P 500 benchmark
 
-### 📉 Analysis Page
+### Analysis Page
 - Search any asset ticker
 - TradingView chart integration
 - Current price
@@ -53,7 +53,7 @@ A modern financial dashboard built with Streamlit to track portfolio performance
 - MA difference percentage
 - Bullish / Bearish / Neutral signal box
 
-### 🧠 Market Signals
+### Market Signals
 - RSI-based overbought / oversold detection
 - MA20 vs MA50 trend classification
 - Momentum interpretation using MA Diff
@@ -61,7 +61,7 @@ A modern financial dashboard built with Streamlit to track portfolio performance
 
 ---
 
-## 🧱 Project Structure
+## Project Structure
 
 ```text
 src/
@@ -81,7 +81,7 @@ pages/
 🏠_Home.py
 
 ```
-## 🛠 Technologies
+## Technologies
 
 - Python  
 - Streamlit  
@@ -93,7 +93,7 @@ pages/
 
 ---
 
-## ▶️ How to Run
+## How to Run
 
 ```bash
 pip install -r requirements.txt

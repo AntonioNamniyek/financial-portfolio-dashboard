@@ -7,7 +7,7 @@ A modern financial dashboard built with Streamlit to track portfolio performance
 
 ---
 
-##Preview
+## Preview
 
 ### Portfolio Insights
 <img src="Portfolio.png" width="800"/>
